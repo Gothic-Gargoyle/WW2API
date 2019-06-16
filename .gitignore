@@ -1,0 +1,4 @@
+# Exclude these directories
+/env*
+.idea/
+*.pyc
