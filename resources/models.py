@@ -1,17 +1,20 @@
 from django.db import models
 
-# Create your models here.
+
+'''
+ Classes for everything in the backend, this are gonna be A LOT of models.
+'''
 
 
 class Country(models.Model):
     def __str__(self):
         return self.name
-    name = models.CharField(max_length = 45)
+    name = models.CharField(max_length=45)
 
 
 class ArmedForce(models.Model):
     name = models.CharField(max_length=45)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country,on_delete=models.DO_NOTHING)
     date_established = models.DateField()
 
 
@@ -38,18 +41,21 @@ class ManufacturedThing(models.Model):
     length = models.FloatField()
     width = models.FloatField()
     height = models.FloatField()
+    start_production = models.DateField()
+    end_production = models.DateField()
     in_service = models.DateField()
     out_service = models.DateField()
     in_use_by = models.ManyToManyField(ArmedForce)
 
 
-
-# Manufactured stuff
+'''
+ Subclasses of manufactured stuff
+'''
 
 
 class Projectile(ManufacturedThing):
     caliber = models.CharField(max_length=45)
-    type = models.CharField(max_length=45) # Make own class
+    type = models.CharField(max_length=45)  # Make own class
 
 
 class Weapon(ManufacturedThing):
@@ -61,10 +67,14 @@ class Engine(ManufacturedThing):
     displacement = models.IntegerField()
 
 
+class Type(models.Model):
+    type_string = models.CharField(max_length=45)
+
+
 class WarMachine(ManufacturedThing):
     armament = models.ManyToManyField(Weapon, on_delete=models.DO_NOTHING)
     crew = models.IntegerField()
-    type = models.CharField(max_length=45)  # Make own class
+    type = models.ManyToManyField(Type, on_delete=models.DO_NOTHING)
 
 
 class Motorized(ManufacturedThing):
@@ -73,17 +83,17 @@ class Motorized(ManufacturedThing):
     loaded_weight = models.FloatField()
 
 
-class Aircraft(Motorized,WarMachine):
+class Aircraft(Motorized, WarMachine):
     service_ceiling = models.FloatField()
     wing_area = models.FloatField()
 
 
-class Ship(Motorized,WarMachine):
+class Ships(Motorized, WarMachine):
     commissioned = models.DateField()
-    decommissioned = models.DateField() # need to find way for multiple instances of com/decom
+    decommissioned = models.DateField()  # need to find way for multiple instances of com/decom
     draft = models.FloatField()
 
 
-class Vehicle(Motorized,WarMachine):
+class Vehicles(Motorized, WarMachine):
     wheelbase = models.FloatField()
     track = models.FloatField()
